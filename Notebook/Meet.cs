@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Notebook
+{
+    /// <summary>
+    /// Класс, который описывает встречи
+    /// </summary>
+    class Meet
+    {
+        /// <summary>
+        /// Название встречи
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Дата встречи
+        /// </summary>
+        public DateTime DateStart { get; set; } 
+
+        /// <summary>
+        /// Дата уведомления о встрече
+        /// </summary>
+        public DateTime DateNotification { get; set; }
+
+        public Meet(string name, DateTime dateStart, DateTime dateNotification)
+        {
+            Name = name;
+            DateStart = dateStart;
+            DateNotification = dateNotification;
+        }
+
+        public override string ToString()
+        {
+            return $"Встреча {Name} начинается {DateStart}, уведомить за {DateNotification}";
+        }
+
+    }
+}
