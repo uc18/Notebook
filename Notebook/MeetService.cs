@@ -8,7 +8,6 @@ namespace Notebook
     /// </summary>
     class MeetService
     {
-        CultureInfo cultureInfo = new CultureInfo("ru-Ru");
         ListMeets _listMeets;
 
         public MeetService(ListMeets listMeets) 
@@ -18,18 +17,14 @@ namespace Notebook
 
         public void CreateNewMeet()
         {
-            Console.WriteLine("Введите название события");
+
+            Console.Write("Введите название события: ");
             string name = Console.ReadLine();
 
-            Console.WriteLine("Введите дату начала события в формате дд ММММ ГГГГ ЧЧ:ММ");
-            var dateStartEvent = DateTime.Parse(Console.ReadLine(), cultureInfo);
-
-            Console.WriteLine("Введите дату окончания события в формате дд ММММ ГГГГ ЧЧ:ММ");
-            var dateEndEvent = DateTime.Parse(Console.ReadLine(), cultureInfo);
-
-            Console.WriteLine("Введите дату напоминания дд ММММ ГГГГ ЧЧ:ММ");
-            var dateNotification = DateTime.Parse(Console.ReadLine(), cultureInfo);
-
+            DateTime dateStartEvent = ParseDateTime("Введите дату начала события в формате дд ММММ ГГГГ ЧЧ:ММ");
+            DateTime dateNotification = ParseDateTime("Введите дату напоминания в формате дд ММММ ГГГГ ЧЧ:ММ");
+            DateTime dateEndEvent = ParseDateDouble("Введите длительность события в минутах: ", dateStartEvent);
+            
             if (GetValidationMessage(dateStartEvent, dateEndEvent, dateNotification, out string validationMessage))
             {
                 Console.WriteLine(validationMessage);
@@ -45,33 +40,95 @@ namespace Notebook
 
         public void GetAllMeets()
         {
-            foreach (var meet in _listMeets.Meets)
+            if ( _listMeets.Meets.Count > 0)
             {
-                Console.WriteLine(meet);
+                foreach (var meet in _listMeets.Meets)
+                {
+                    Console.WriteLine(meet);
+                }
+                Console.WriteLine("Нажмите ENTER для выхода из просмотра.");
+                Console.ReadLine();
             }
-            Console.WriteLine("Нажмите любую клавишу для выхода из просмотра.");
-            Console.ReadLine();
+            else
+            {
+                Console.WriteLine("Событий нет. Нажмите ENTER для выхода.");
+                Console.ReadLine();
+            }
         }
 
         public void ChangeExistingMeet()
         {
-            foreach (var meet in _listMeets.Meets)
+            string changeOptions;
+            if (_listMeets.Meets.Count > 0)
             {
-                Console.WriteLine(meet);
+                foreach (var meet in _listMeets.Meets)
+                {
+                    Console.WriteLine(meet);
+                }
+                Console.Write("Выберете встречу, введя её название: ");
+
+                string nameMeet = Console.ReadLine();
+
+                var existMeet = _listMeets.Meets.Find(o => o.Name == nameMeet);
+                do
+                {
+                    Console.WriteLine("Введите раздел для изменений: \n" +
+                                       "1 - Название \n" +
+                                       "2 - Дата начала \n" +
+                                       "3 - Дата уведомления \n" +
+                                       "4 - Выход из раздела");
+                    changeOptions = Console.ReadLine();
+                    switch (changeOptions)
+                    {
+                        case "1":
+                            Console.Write("Введите новое название встречи:");
+                            string name = Console.ReadLine();
+                            existMeet.Name = name;
+                            break;
+
+                        case "2":
+                            DateTime dateStartEvent = ParseDateTime("Введите новое время начала встречи в формате дд ММММ ГГГГ ЧЧ:ММ");
+                            existMeet.DateStart = dateStartEvent;
+                            DateTime dateEndEvent = ParseDateDouble("Введите новую длительность события в минутах", dateStartEvent);
+                            existMeet.DateEnd = dateEndEvent;
+                            break;
+
+                        case "3":
+                            DateTime dateNotification = ParseDateTime("Введите новую дату напоминания дд ММММ ГГГГ ЧЧ:ММ");
+                            existMeet.DateNotification = dateNotification;
+                            break;
+
+                        case "4":
+                            break;
+
+                        default:
+                            Console.Clear();
+                            Console.WriteLine("Введен неизвестный символ, для продолжения нажмите Enter");
+                            Console.ReadLine();
+                            break;
+                    }
+                } while (changeOptions != "4");
+
             }
-            Console.WriteLine("Введите название встречи для изменения");
-            string nameDelMeet = Console.ReadLine();
-
-            var a = _listMeets.Meets.Find(o => o.Name == nameDelMeet);
-
-            Console.WriteLine(a);
-            Console.ReadLine();
+            else
+            {
+                Console.WriteLine("События не созданы. Нажмите ENTER для выхода.");
+                Console.ReadLine();
+            }
 
         }
 
         public void DeleteExistingMeet()
         {
-            Console.WriteLine("Удаление события");
+            if (_listMeets.Meets.Count > 0)
+            {
+                Console.WriteLine("Удаление события");
+            }
+            else
+            {
+                Console.WriteLine("События не созданы. Нажмите ENTER для выхода.");
+                Console.ReadLine();
+            }
         }
 
         private bool GetValidationMessage(DateTime dateStart, DateTime dateEnd, DateTime dateNotification, out string validationMessage)
@@ -96,6 +153,35 @@ namespace Notebook
                 }
             }
             return false;
+        }
+
+        private DateTime ParseDateTime(string message)
+        {
+            CultureInfo cultureInfo = new CultureInfo("ru-Ru");
+            DateTimeStyles styles = DateTimeStyles.None;
+            bool success;
+            DateTime date;
+            do{
+                    Console.WriteLine(message);
+                    success = DateTime.TryParse(Console.ReadLine(), cultureInfo, styles, out date);
+
+            } while (success != true);
+            return date;
+        }
+
+        private DateTime ParseDateDouble(string message, DateTime dateStart)
+        {
+            bool success;
+            DateTime date;
+            do
+            {
+                Console.Write(message);
+                success = Double.TryParse(Console.ReadLine(), out double Mins);
+                date = dateStart.AddMinutes(Mins);
+
+            } while (success != true);
+
+            return date;
         }
     }
 }

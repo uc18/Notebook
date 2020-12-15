@@ -15,7 +15,7 @@ namespace Notebook
         public string Name { get; set; }
 
         /// <summary>
-        /// Дата встречи
+        /// Дата начала встречи
         /// </summary>
         public DateTime DateStart { get; set; } 
 

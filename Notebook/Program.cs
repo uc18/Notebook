@@ -14,7 +14,7 @@ namespace Notebook
             do
             {
                 Console.Clear();
-                Console.WriteLine("Выберете действие: \n" +
+                Console.WriteLine("Выберете действие и нажмите Enter: \n" +
                                "1: Создать новое событие \n" +
                                "2: Изменить созданное событие \n" +
                                "3: Просмотреть все события \n" +
@@ -41,6 +41,11 @@ namespace Notebook
                         break;
                     case "5":
                         Console.Clear();
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("Введен неизвестный символ, для продолжения нажмите Enter");
+                        Console.ReadLine();
                         break;
                 }
             } while (a != "5");
