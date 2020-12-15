@@ -17,5 +17,10 @@ namespace Notebook
         {
             Meets.Add(meet);
         }
+
+        public void DelMeet(Meet meet)
+        {
+            Meets.Remove(meet);
+        }
     }
 }

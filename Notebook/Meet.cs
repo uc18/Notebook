@@ -20,20 +20,26 @@ namespace Notebook
         public DateTime DateStart { get; set; } 
 
         /// <summary>
+        /// Дата конца встречи
+        /// </summary>
+        public DateTime DateEnd { get; set; }
+
+        /// <summary>
         /// Дата уведомления о встрече
         /// </summary>
         public DateTime DateNotification { get; set; }
 
-        public Meet(string name, DateTime dateStart, DateTime dateNotification)
+        public Meet(string name, DateTime dateStart, DateTime dateEnd, DateTime dateNotification)
         {
             Name = name;
             DateStart = dateStart;
+            DateEnd = dateEnd;
             DateNotification = dateNotification;
         }
 
         public override string ToString()
         {
-            return $"Встреча {Name} начинается {DateStart}, уведомить за {DateNotification}";
+            return $"Событие {Name}; дата: {DateStart}: {DateEnd}; уведомить: {DateNotification}";
         }
 
     }
