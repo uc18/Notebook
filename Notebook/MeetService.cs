@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace Notebook
 {
     /// <summary>
-    /// Класс, в котором идет вся основная работа со встречами
+    /// Класс, в котором идет вся основная работа с событиями
     /// </summary>
     class MeetService
     {
@@ -15,122 +16,90 @@ namespace Notebook
             _listMeets = listMeets;
         }
 
-        public void CreateNewMeet()
+        /// <summary>
+        /// Метод для создания событий
+        /// </summary>
+        public void CreateNewMeet(string name, DateTime dateStart, DateTime dateEnd, DateTime dateNotification)
         {
-
-            Console.Write("Введите название события: ");
-            string name = Console.ReadLine();
-
-            DateTime dateStartEvent = ParseDateTime("Введите дату начала события в формате дд ММММ ГГГГ ЧЧ:ММ");
-            DateTime dateNotification = ParseDateTime("Введите дату напоминания в формате дд ММММ ГГГГ ЧЧ:ММ");
-            DateTime dateEndEvent = ParseDateDouble("Введите длительность события в минутах: ", dateStartEvent);
-            
-            if (GetValidationMessage(dateStartEvent, dateEndEvent, dateNotification, out string validationMessage))
+           
+            if (GetValidationMessage(dateStart, dateEnd, dateNotification, out string validationMessage))
             {
                 Console.WriteLine(validationMessage);
                 Console.ReadLine();
             }
             else
             {
-                Meet meet = new Meet(name, dateStartEvent, dateEndEvent, dateNotification);
+                Meet meet = new Meet(name, dateStart, dateEnd, dateNotification);
                 _listMeets.AddMeet(meet);
             }
 
         }
 
-        public void GetAllMeets()
+        /// <summary>
+        /// Метод возвращающий все события
+        /// </summary>
+        public bool GetAllMeets(out List<Meet> meets)
         {
+            meets = new List<Meet>();
             if ( _listMeets.Meets.Count > 0)
             {
                 foreach (var meet in _listMeets.Meets)
                 {
-                    Console.WriteLine(meet);
+                    meets.Add(meet);
                 }
-                Console.WriteLine("Нажмите ENTER для выхода из просмотра.");
-                Console.ReadLine();
+                return true;
             }
             else
             {
-                Console.WriteLine("Событий нет. Нажмите ENTER для выхода.");
-                Console.ReadLine();
+                return false;
             }
         }
 
-        public void ChangeExistingMeet()
+        /// <summary>
+        /// Возвращает встречи за выбранный промежуток времени
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="meets"></param>
+        /// <returns></returns>
+        public bool GetIntervalMeets(DateTime start,DateTime end, out List<Meet> meets)
         {
-            string changeOptions;
+            meets = new List<Meet>();
             if (_listMeets.Meets.Count > 0)
             {
                 foreach (var meet in _listMeets.Meets)
                 {
-                    Console.WriteLine(meet);
-                }
-                Console.Write("Выберете встречу, введя её название: ");
-
-                string nameMeet = Console.ReadLine();
-
-                var existMeet = _listMeets.Meets.Find(o => o.Name == nameMeet);
-                do
-                {
-                    Console.WriteLine("Введите раздел для изменений: \n" +
-                                       "1 - Название \n" +
-                                       "2 - Дата начала \n" +
-                                       "3 - Дата уведомления \n" +
-                                       "4 - Выход из раздела");
-                    changeOptions = Console.ReadLine();
-                    switch (changeOptions)
+                    if(start <= meet.DateStart && end >= meet.DateEnd)
                     {
-                        case "1":
-                            Console.Write("Введите новое название встречи:");
-                            string name = Console.ReadLine();
-                            existMeet.Name = name;
-                            break;
-
-                        case "2":
-                            DateTime dateStartEvent = ParseDateTime("Введите новое время начала встречи в формате дд ММММ ГГГГ ЧЧ:ММ");
-                            existMeet.DateStart = dateStartEvent;
-                            DateTime dateEndEvent = ParseDateDouble("Введите новую длительность события в минутах", dateStartEvent);
-                            existMeet.DateEnd = dateEndEvent;
-                            break;
-
-                        case "3":
-                            DateTime dateNotification = ParseDateTime("Введите новую дату напоминания дд ММММ ГГГГ ЧЧ:ММ");
-                            existMeet.DateNotification = dateNotification;
-                            break;
-
-                        case "4":
-                            break;
-
-                        default:
-                            Console.Clear();
-                            Console.WriteLine("Введен неизвестный символ, для продолжения нажмите Enter");
-                            Console.ReadLine();
-                            break;
+                        meets.Add(meet);
                     }
-                } while (changeOptions != "4");
-
+                    else
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
-            else
-            {
-                Console.WriteLine("События не созданы. Нажмите ENTER для выхода.");
-                Console.ReadLine();
-            }
-
+            return false;
         }
 
-        public void DeleteExistingMeet()
+        /// <summary>
+        /// Метод для удаления события
+        /// </summary>
+        public void DeleteExistingMeet(Meet meet)
         {
-            if (_listMeets.Meets.Count > 0)
-            {
-                Console.WriteLine("Удаление события");
-            }
-            else
-            {
-                Console.WriteLine("События не созданы. Нажмите ENTER для выхода.");
-                Console.ReadLine();
-            }
+            _listMeets.DelMeet(meet);
         }
 
+        #region
+        /// <summary>
+        /// Внутренний метод для проверки временных промежутков дат
+        /// </summary>
+        /// <param name="dateStart">Дата начала события</param>
+        /// <param name="dateEnd">Дата окончания события</param>
+        /// <param name="dateNotification">Дата уведомления</param>
+        /// <param name="validationMessage">Возвращаемое сообщение</param>
+        /// <returns>Булевый флаг</returns>
         private bool GetValidationMessage(DateTime dateStart, DateTime dateEnd, DateTime dateNotification, out string validationMessage)
         {
             validationMessage = "";
@@ -145,43 +114,20 @@ namespace Notebook
 
             foreach (var meet in _listMeets.Meets)
             {
-                //TO DO продумать варианты
-                if (meet.DateStart >= dateStart && meet.DateEnd <= dateEnd)
+                if ((meet.DateStart >= dateStart && meet.DateStart <= dateEnd) ||
+                    (meet.DateEnd > dateStart && meet.DateEnd <= dateEnd) ||
+                    (dateStart >= meet.DateStart && dateStart < meet.DateEnd) ||
+                    (dateEnd > meet.DateStart && dateEnd <= meet.DateEnd))
                 {
                     validationMessage = "События не могут пересекаться";
                     return true;
                 }
             }
+
+
             return false;
         }
 
-        private DateTime ParseDateTime(string message)
-        {
-            CultureInfo cultureInfo = new CultureInfo("ru-Ru");
-            DateTimeStyles styles = DateTimeStyles.None;
-            bool success;
-            DateTime date;
-            do{
-                    Console.WriteLine(message);
-                    success = DateTime.TryParse(Console.ReadLine(), cultureInfo, styles, out date);
-
-            } while (success != true);
-            return date;
-        }
-
-        private DateTime ParseDateDouble(string message, DateTime dateStart)
-        {
-            bool success;
-            DateTime date;
-            do
-            {
-                Console.Write(message);
-                success = Double.TryParse(Console.ReadLine(), out double Mins);
-                date = dateStart.AddMinutes(Mins);
-
-            } while (success != true);
-
-            return date;
-        }
+        #endregion
     }
 }

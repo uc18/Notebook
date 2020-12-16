@@ -39,7 +39,7 @@ namespace Notebook
 
         public override string ToString()
         {
-            return $"Событие {Name}; дата: {DateStart}: {DateEnd}; уведомить: {DateNotification}";
+            return $"Событие: {Name}; Дата: {DateStart}: {DateEnd}; Уведомить: {DateNotification}";
         }
 
     }

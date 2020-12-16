@@ -5,7 +5,7 @@ using System.Text;
 namespace Notebook
 {
     /// <summary>
-    /// Класс, который описывает существующие встречи
+    /// Класс, который описывает список существующих встреч
     /// </summary>
     class ListMeets
     {

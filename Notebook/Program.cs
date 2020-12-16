@@ -8,9 +8,12 @@ namespace Notebook
         {
             Console.Title = "Notebook";
 
-            string a;
+            string options;
             ListMeets listMeets = new ListMeets();
             MeetService meetService = new MeetService(listMeets);
+            UploadService uploadWorker = new UploadService();
+            MeetMainWorker worker = new MeetMainWorker(meetService,uploadWorker);
+            
             do
             {
                 Console.Clear();
@@ -19,27 +22,32 @@ namespace Notebook
                                "2: Изменить созданное событие \n" +
                                "3: Просмотреть все события \n" +
                                "4: Удалить созданное событие \n" +
-                               "5: Выход из программы");
-                a = Console.ReadLine();
-                switch (a)
+                               "5: Выгрузить календарь \n" +
+                               "6: Выход из программы");
+                options = Console.ReadLine();
+                switch (options)
                 {
                     case "1":
                         Console.Clear();
-                        meetService.CreateNewMeet();
+                        worker.CreateNewMeet();
                         break;
                     case "2":
                         Console.Clear();
-                        meetService.ChangeExistingMeet();
+                        worker.ChangeExistsMeet();
                         break;
                     case "3":
                         Console.Clear();
-                        meetService.GetAllMeets();
+                        worker.GetAllMeet();
                         break;
                     case "4":
                         Console.Clear();
-                        meetService.DeleteExistingMeet();
+                        worker.DeleteExistMeet();
                         break;
                     case "5":
+                        Console.WriteLine("Выгрузка");
+                        worker.SaveOnFile();
+                        break;
+                    case "6":
                         Console.Clear();
                         break;
                     default:
@@ -48,7 +56,7 @@ namespace Notebook
                         Console.ReadLine();
                         break;
                 }
-            } while (a != "5");
+            } while (options != "6");
             
         }
 
