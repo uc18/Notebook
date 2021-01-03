@@ -23,7 +23,7 @@ namespace Notebook
             string name = Console.ReadLine();
 
             DateTime dateStartEvent = ParseDateTime("Введите дату начала события в формате дд ММММ ГГГГ ЧЧ:ММ");
-            DateTime dateNotification = ParseDateTime("Введите дату напоминания в формате дд ММММ ГГГГ ЧЧ:ММ");
+            DateTime dateNotification = ParseDateTime("Введите дату напоминания в формате дд ММММ ГГГГ ЧЧ");
             DateTime dateEndEvent = ParseDateDouble("Введите длительность события в минутах: ", dateStartEvent);
 
             _meetService.CreateNewMeet(name, dateStartEvent, dateEndEvent, dateNotification);
@@ -149,7 +149,7 @@ namespace Notebook
         public void SaveOnFile()
         {
             DateTime dateStart = ParseDateTime("Введите дату начала события в формате дд ММММ ГГГГ ЧЧ:ММ");
-            DateTime dateEnd = ParseDateTime("Введите дату начала события в формате дд ММММ ГГГГ ЧЧ:ММ");
+            DateTime dateEnd = ParseDateTime("Введите дату конца события в формате дд ММММ ГГГГ ЧЧ:ММ");
             List<Meet> meets;
             if (_meetService.GetIntervalMeets(dateStart,dateEnd,out meets))
             {

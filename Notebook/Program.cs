@@ -9,13 +9,25 @@ namespace Notebook
             Console.Title = "Notebook";
 
             string options;
+            DateTime dateNow = DateTime.Now;
             ListMeets listMeets = new ListMeets();
             MeetService meetService = new MeetService(listMeets);
             UploadService uploadWorker = new UploadService();
             MeetMainWorker worker = new MeetMainWorker(meetService,uploadWorker);
+            Timer timerNotification = new Timer(listMeets, dateNow.AddHours(1));
+            timerNotification.Notify += DisplayMessage;
             
             do
             {
+                if (timerNotification.TimeCheck == DateTime.Now)
+                {
+                    while(true)
+                    {
+                        timerNotification.CheckNotification();
+                        break;
+                    }
+                }
+
                 Console.Clear();
                 Console.WriteLine("Выберете действие и нажмите Enter: \n" +
                                "1: Создать новое событие \n" +
@@ -58,6 +70,11 @@ namespace Notebook
                 }
             } while (options != "6");
             
+        }
+
+        private static void DisplayMessage(string message)
+        {
+            Console.WriteLine(message);
         }
 
     }
