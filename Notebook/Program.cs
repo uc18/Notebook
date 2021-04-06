@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Notebook
 {
@@ -9,33 +11,24 @@ namespace Notebook
             Console.Title = "Notebook";
 
             string options;
-            DateTime dateNow = DateTime.Now;
             ListMeets listMeets = new ListMeets();
             MeetService meetService = new MeetService(listMeets);
             UploadService uploadWorker = new UploadService();
             MeetMainWorker worker = new MeetMainWorker(meetService,uploadWorker);
-            Timer timerNotification = new Timer(listMeets, dateNow.AddHours(1));
-            timerNotification.Notify += DisplayMessage;
+            Timer timerMeetCheck = new Timer(listMeets);
             
             do
             {
-                if (timerNotification.TimeCheck == DateTime.Now)
-                {
-                    while(true)
-                    {
-                        timerNotification.CheckNotification();
-                        break;
-                    }
-                }
-
+                //Тут должно быть что-то асинхронное
+                InitialCheckAsync(timerMeetCheck);
                 Console.Clear();
-                Console.WriteLine("Выберете действие и нажмите Enter: \n" +
-                               "1: Создать новое событие \n" +
-                               "2: Изменить созданное событие \n" +
-                               "3: Просмотреть все события \n" +
-                               "4: Удалить созданное событие \n" +
-                               "5: Выгрузить календарь \n" +
-                               "6: Выход из программы");
+                Console.WriteLine($"Выберете действие и нажмите Enter: \n" +
+                                 "1: Создать новое событие \n" +
+                                 "2: Изменить созданное событие \n" +
+                                 "3: Просмотреть все события \n" +
+                                 "4: Удалить созданное событие \n" +
+                                 "5: Выгрузить календарь \n" +
+                                 "6: Выход из программы");
                 options = Console.ReadLine();
                 switch (options)
                 {
@@ -69,13 +62,10 @@ namespace Notebook
                         break;
                 }
             } while (options != "6");
-            
         }
-
-        private static void DisplayMessage(string message)
+        static async void InitialCheckAsync(Timer timer)
         {
-            Console.WriteLine(message);
+            await Task.Run(() => timer.CheckNotification());
         }
-
     }
 }

@@ -1,36 +1,36 @@
 ﻿using System;
+using System.Threading;
 
 namespace Notebook
 {
     class Timer
     {
-        public DateTime TimeCheck { get; set; }
-
-        ListMeets _listMeets;
+        readonly ListMeets _listMeets;
 
         public delegate void TimerHandler(string message);
 
         public event TimerHandler Notify;
+        public bool something;
 
-        public Timer(ListMeets listMeets, DateTime timeCheck) 
+        public Timer(ListMeets listMeets) 
         {
             _listMeets = listMeets;
-            TimeCheck = timeCheck;
         }
 
-        public void CheckNotification ()
+        public void CheckNotification()
         {
-            DateTime date = DateTime.Now;
-
-            foreach (var meet in _listMeets.Meets)
+            do
             {
-                if (date == meet.DateNotification)
+                foreach (var meet in _listMeets.Meets)
                 {
-                    Notify?.Invoke($"Скоро событие {meet.Name}");
-                    TimeCheck = TimeCheck.AddHours(1);
+                    if (DateTime.Now.Ticks == meet.DateNotification.Ticks)
+                    {
+                        Notify?.Invoke($"Скоро событие {meet.Name}");
+                        Console.WriteLine("SHIT HAPPEND!");
+                        something = true;
+                    }
                 }
-            }
-
+            } while(!something);
         }
     }
 }

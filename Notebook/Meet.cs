@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Notebook
 {
@@ -28,6 +26,8 @@ namespace Notebook
         /// Дата уведомления о встрече
         /// </summary>
         public DateTime DateNotification { get; set; }
+
+        public Meet() { }
 
         public Meet(string name, DateTime dateStart, DateTime dateEnd, DateTime dateNotification)
         {
